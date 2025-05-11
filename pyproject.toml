@@ -7,3 +7,11 @@ requires-python = ">=3.13"
 dependencies = [
     "openai>=1.78.0",
 ]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.11.9",
+]
+
+[tool.ruff]
+line-length = 320

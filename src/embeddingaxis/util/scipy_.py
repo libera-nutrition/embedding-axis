@@ -31,19 +31,26 @@ def get_similarity(text1: str, text2: str) -> float:
     similarity = 1 - cosine(embedding1, embedding2)
     return float(similarity)
 
-def get_similar(sample: str, ref1: str, ref2: str) -> SampleSimilarity:
-    """Return the more similar of two texts to a sample text."""
+def get_similar(sample: str, ref1: str, ref2: str, *, debias: bool = True) -> SampleSimilarity:
+    """Return the more similar of two references texts to the sample text.
+    
+    If `debias` is True, the similarity is debiased by subtracting the similarity of the empty string to the reference texts.
+    """
     similarity1 = get_similarity(sample, ref1)
     similarity2 = get_similarity(sample, ref2)
-    nearest = ref1 if similarity1 > similarity2 else ref2
-    separation = abs(similarity1 - similarity2)
+
+    if debias:
+        similarity1 -= get_similarity("", ref1)
+        similarity2 -= get_similarity("", ref2)
+
+    nearest = {
+        similarity1 == similarity2: None, 
+        similarity1 > similarity2: ref1,
+        similarity1 < similarity2: ref2,
+    }[True]
+    separation = similarity1 - similarity2
 
     return SampleSimilarity(
-        sample=sample,
-        ref1=ref1,
-        ref2=ref2,
-        similarity1=similarity1,
-        similarity2=similarity2,
         nearest=nearest,
         separation=separation,
     )

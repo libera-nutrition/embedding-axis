@@ -1,6 +1,6 @@
 from scipy.spatial.distance import cosine
 
-from embeddingaxis.types import SampleSimilarity
+from embeddingaxis.types import SampleSimilarity, SampleScaledSimilarity
 from embeddingaxis.util.openai_ import get_embedding
 
 def get_distance(text1: str, text2: str) -> float:
@@ -55,13 +55,15 @@ def get_similar(sample: str, ref1: str, ref2: str, *, debias: bool = True) -> Sa
         separation=separation,
     )
 
-def order_similar(ref1: str, ref2: str, samples: list[str], **kwargs) -> dict[str, SampleSimilarity]:
+def order_similar(ref1: str, ref2: str, samples: list[str], **kwargs) -> dict[str, SampleScaledSimilarity]:
     """Return an ordered mapping of sample texts by their similarity to the first of the two reference texts."""
     similarities = {s: get_similar(ref1=ref1, ref2=ref2, sample=s, **kwargs) for s in samples}
+    min_separation = min(abs(s["separation"]) for s in similarities.values())
+    similarities = {s: {**sim, "scaled_separation": sim["separation"] / min_separation} for s, sim in similarities.items()}
     return dict(sorted(similarities.items(), key=lambda item: -item[1]["separation"]))
 
 def print_similar(ref1: str, ref2: str, samples: list[str], **kwargs) -> None:
     """Print the ordered mapping of sample texts by their similarity to the first of the two reference texts."""
     similarities = order_similar(ref1=ref1, ref2=ref2, samples=samples, **kwargs)
     for sample, similarity in similarities.items():
-        print(f"{sample}: {similarity['separation']:.3f} {similarity['nearest']}")
+        print(f"{sample}: {similarity['separation']:.3f} ({similarity["scaled_separation"]:.1f}x) {similarity['nearest']}")

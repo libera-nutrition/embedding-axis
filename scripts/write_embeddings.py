@@ -18,6 +18,7 @@ for s in PERSISTENT_CACHE_EMBEDDINGS_STRINGS:
         print(f"Skipped preexisting embedding for {s!r}.")
         continue
     emb = get_embedding(s)
+    print(f"Fetched embedding for {s!r}.")
     PERSISTENT_CACHE_EMBEDDINGS[s] = emb
 
 PERSISTENT_CACHE_EMBEDDINGS = {s: PERSISTENT_CACHE_EMBEDDINGS[s] for s in sorted(PERSISTENT_CACHE_EMBEDDINGS_STRINGS)}

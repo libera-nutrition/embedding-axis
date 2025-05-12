@@ -14,6 +14,7 @@ PACKAGE_NAME: str = PACKAGE_PATH.name
 _GiB: int = 1024**3
 DISKCACHE: diskcache.FanoutCache = diskcache.FanoutCache(directory=str(PACKAGE_PATH / ".diskcache"), shards=8, timeout=10, size_limit=5 * _GiB)
 PERSISTENT_CACHE_EMBEDDINGS_STRINGS: set[str] = {
+    "",
     "weight loss",
     "weight gain",
     "fat loss",

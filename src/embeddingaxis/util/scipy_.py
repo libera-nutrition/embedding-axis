@@ -34,7 +34,7 @@ def get_similarity(text1: str, text2: str) -> float:
 def get_similar(sample: str, ref1: str, ref2: str, *, debias: bool = True) -> SampleSimilarity:
     """Return the more similar of two references texts to the sample text.
     
-    If `debias` is True, the similarity is debiased by subtracting the similarity of the empty string to the reference texts.
+    If `debias` is True, the similarity is debiased by subtracting the natural bias among the reference texts.
     """
     similarity1 = get_similarity(sample, ref1)
     similarity2 = get_similarity(sample, ref2)

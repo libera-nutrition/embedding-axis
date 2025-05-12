@@ -54,3 +54,14 @@ def get_similar(sample: str, ref1: str, ref2: str, *, debias: bool = True) -> Sa
         nearest=nearest,
         separation=separation,
     )
+
+def order_similar(ref1: str, ref2: str, samples: list[str], **kwargs) -> dict[str, SampleSimilarity]:
+    """Return an ordered mapping of sample texts by their similarity to the first of the two reference texts."""
+    similarities = {s: get_similar(ref1=ref1, ref2=ref2, sample=s, **kwargs) for s in samples}
+    return dict(sorted(similarities.items(), key=lambda item: -item[1]["separation"]))
+
+def print_similar(ref1: str, ref2: str, samples: list[str], **kwargs) -> None:
+    """Print the ordered mapping of sample texts by their similarity to the first of the two reference texts."""
+    similarities = order_similar(ref1=ref1, ref2=ref2, samples=samples, **kwargs)
+    for sample, similarity in similarities.items():
+        print(f"{sample}: {similarity['separation']:.3f} {similarity['nearest']}")
